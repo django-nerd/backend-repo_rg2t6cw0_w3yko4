@@ -1,48 +1,41 @@
 """
-Database Schemas
+Database Schemas for the Timetable & Resources App
 
-Define your MongoDB collection schemas here using Pydantic models.
-These schemas are used for data validation in your application.
-
-Each Pydantic model represents a collection in your database.
-Model name is converted to lowercase for the collection name:
-- User -> "user" collection
-- Product -> "product" collection
-- BlogPost -> "blogs" collection
+Each Pydantic model corresponds to a MongoDB collection. The collection
+name is the lowercase of the class name.
 """
-
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 
-# Example schemas (replace with your own):
-
-class User(BaseModel):
+class Timetable(BaseModel):
     """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
+    Timetable collection schema
+    Collection name: "timetable"
     """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    day: Literal["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"] = Field(..., description="Day of the week")
+    subject: str = Field(..., description="Subject or activity name")
+    start_time: str = Field(..., description="Start time in HH:MM format")
+    end_time: str = Field(..., description="End time in HH:MM format")
+    location: Optional[str] = Field(None, description="Room or location")
+    notes: Optional[str] = Field(None, description="Additional notes")
 
-class Product(BaseModel):
+class Resource(BaseModel):
     """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
+    Resource collection schema
+    Collection name: "resource"
     """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+    title: str = Field(..., description="Resource title")
+    url: Optional[str] = Field(None, description="Link to resource")
+    topic: Optional[str] = Field(None, description="Topic or tag")
+    description: Optional[str] = Field(None, description="Short description")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Doubt(BaseModel):
+    """
+    Doubt (Q&A) collection schema
+    Collection name: "doubt"
+    """
+    question: str = Field(..., description="Student question")
+    student_name: Optional[str] = Field(None, description="Name of the student")
+    answer: Optional[str] = Field(None, description="Answer to the question")
+    answered_by: Optional[str] = Field(None, description="Name of the person who answered")
+    status: Literal["open", "answered"] = Field("open", description="Current status of the doubt")
